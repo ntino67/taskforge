@@ -14,14 +14,16 @@ Each task has:
 - `deps`: array of other task `id`.
 - `command`: string to execute via shell.
 - `env`: dict of env vars to add/override. (optionnal)
-- `workind_dir`: string of a path. (optionnal)
+- `working_dir`: string of a path. (optionnal)
 
 A task succeeds if the process exits with code 0, fails otherwise.
+
 No dynamic generation of tasks at runtime.
 
 ## Dependencies
 
 A task may only run after all dependencies succeeded.
+
 If a dependency fails:
 
 - The dependant task is skipped.
@@ -43,6 +45,8 @@ Parallel mode:
 
 ## CLI
 
+### Run
+
 ```bash
 taskforge run <task-id> [...]
 ```
@@ -51,11 +55,15 @@ taskforge run <task-id> [...]
 - Loads config from a default path (taskforge.yml) or --config.
 - Builds graph from all tasks in config, then extracts the subgraph needed for targets.
 
+### List
+
 ```bash
 taskforge list
 ```
 
 - Prints all tasks (id + maybe short description)
+
+### Graph
 
 ```bash
 taskforge graph
@@ -67,7 +75,9 @@ taskforge graph
 ## Failure and exit codes
 
 If any tasks fails, taskforge exits with non-zeros.
+
 If config is invalid (parse error, missing fields, duplicate ids, cycles, unknown task refs) -> fail fast with non-zero and a clear message.
+
 In parallel mode, continue running independant tasks even if another branch fails, BUT mark the run overall as failed.
 
 ## Logging
