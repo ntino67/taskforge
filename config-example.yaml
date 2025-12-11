@@ -1,0 +1,6 @@
+tasks:
+  <task_id>:
+    command: <string>
+    deps: [<task_ids>]    # list can be empty if no deps
+    env: <map>            # optionnal
+    working_dir: <string> # optionnal
