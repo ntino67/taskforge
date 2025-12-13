@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 
-@dataclass
+@dataclass(frozen=True)
 class TaskConfig:
     id: str
     command: str
@@ -10,7 +10,7 @@ class TaskConfig:
     working_dir: str | None
 
 
-@dataclass
+@dataclass(frozen=True)
 class ProjectConfig:
     tasks: dict[str, TaskConfig]
 
