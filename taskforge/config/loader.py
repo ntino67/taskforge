@@ -1,7 +1,7 @@
 import json
 import tomllib
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Callable, Mapping
 
 import yaml
 
@@ -41,52 +41,29 @@ def _detect_format(path: Path) -> str:
 def _parse_file(path: Path, fmt: str) -> Mapping[str, Any]:
     match fmt:
         case "yaml":
-            return _parse_yaml(path)
+            return _parse_with(path, yaml.safe_load, yaml.YAMLError, "YAML")
         case "toml":
-            return _parse_toml(path)
+            return _parse_with(path, tomllib.loads, tomllib.TOMLDecodeError, "TOML")
         case "json":
-            return _parse_json(path)
+            return _parse_with(path, json.loads, json.JSONDecodeError, "JSON")
         case _:
             raise AssertionError("Unreachable")
 
 
-def _parse_yaml(path: Path) -> Mapping[str, Any]:
+def _parse_with(
+    path: Path,
+    parse_fn: Callable[[str], Any],
+    exc_types: type[Exception] | tuple[type[Exception], ...],
+    label: str,
+) -> Mapping[str, Any]:
     try:
-        raw_file = yaml.safe_load(path.read_text(encoding="utf-8"))
-    except yaml.YAMLError as exc:
-        raise ConfigError(f"{path}: invalid YAML") from exc
+        raw_file = parse_fn(path.read_text(encoding="utf-8"))
+    except exc_types as exc:
+        raise ConfigError(f"{path}: invalid {label}") from exc
 
     if not isinstance(raw_file, Mapping):
         raise ConfigError(
-            f"{path}: YAML parsed succesfully but top-level value in not an object: {type(raw_file)}"
-        )
-
-    return raw_file
-
-
-def _parse_toml(path: Path) -> Mapping[str, Any]:
-    try:
-        raw_file = tomllib.loads(path.read_text(encoding="utf-8"))
-    except tomllib.TOMLDecodeError as exc:
-        raise ConfigError(f"{path}: invalid TOML") from exc
-
-    if not isinstance(raw_file, Mapping):
-        raise ConfigError(
-            f"{path}: TOML parsed succesfully but top-level value in not an object: {type(raw_file)}"
-        )
-
-    return raw_file
-
-
-def _parse_json(path: Path) -> Mapping[str, Any]:
-    try:
-        raw_file = json.loads(path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as exc:
-        raise ConfigError(f"{path}: invalid JSON") from exc
-
-    if not isinstance(raw_file, Mapping):
-        raise ConfigError(
-            f"{path}: JSON parsed succesfully but top-level value in not an object: {type(raw_file)}"
+            f"{path}: {label} parsed succesfully but top-level value in not an object: {type(raw_file)}"
         )
 
     return raw_file
