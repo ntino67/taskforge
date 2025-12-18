@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "taskforge"
+version = "0.1.0"
+description = "Local task runner with explicit dependencies and deterministic execution"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+  { name = "Matteo", email = "your.email@example.com" }
+]
+keywords = ["cli", "task-runner", "dag", "automation"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Software Development :: Build Tools",
+]
+
+dependencies = [
+  "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.4",
+  "pytest-cov>=4.1",
+]
+
+[project.scripts]
+taskforge = "taskforge.cmd.taskforge.main:main"
+
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["taskforge*"]
+
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-q"
+testpaths = ["tests"]
+
+
+[tool.coverage.run]
+branch = true
+source = ["taskforge"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+
