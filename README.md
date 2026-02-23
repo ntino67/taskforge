@@ -5,6 +5,8 @@ Local task runner with explicit dependencies (DAG) and deterministic execution.
 ## Install (dev)
 
 ```bash
+git clone https://github.com/ntino67/taskforge
+cd taskforge
 python -m pip install -e .
 ```
 
